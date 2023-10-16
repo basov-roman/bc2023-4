@@ -37,7 +37,7 @@ const server = http.createServer((req, res) => {
     res.end(customXml);
   } else {
     res.statusCode = 500;
-    res.end('Структура XML не відповідає очікуванням.');
+    res.end('Структура XML не відповідає очікуванням!');
   }
 });
 
