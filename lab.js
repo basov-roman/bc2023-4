@@ -5,7 +5,7 @@ const fastXmlParser = require('fast-xml-parser');
 const server = http.createServer((req, res) => {
   // Зчитуємо XML-дані з файлу
   const xmlData = fs.readFileSync('data.xml', 'utf-8');
-
+  
   const parser = new fastXmlParser.XMLParser();
 
   // Розбираємо XML-дані
@@ -17,18 +17,19 @@ const server = http.createServer((req, res) => {
       item.txt === "Доходи, усього" || item.txt === "Витрати, усього"
     );
 
-    // Створюємо власний XML-рядок
-    let customXml = '<data>';
+    const builder = new fastXmlParser.XMLBuilder({});
 
-    selectedCategories.forEach(item => {
-      customXml += `
-        <indicators>
-          <txt>${item.txt}</txt>
-          <value>${item.value}</value>
-        </indicators>`;
-    });
+    const customXmlObj = {
+      data: {
+        indicators: selectedCategories.map(item => ({
+          txt: item.txt,
+          value: item.value
+        }))
+      }
+    };
 
-    customXml += '</data>';
+    const customXml = builder.build(customXmlObj);
+
     // Встановлюємо заголовки відповіді
     res.setHeader('Content-Type', 'application/xml');
 
@@ -40,7 +41,7 @@ const server = http.createServer((req, res) => {
   }
 });
 
-const port = 3000;
+const port = 8000;
 server.listen(port, () => {
   console.log(`Сервер працює на порту ${port}`);
 });
